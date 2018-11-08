@@ -87,17 +87,17 @@ For class types, use the C++-cast that expresses your intent
 
 ## Inheritance
 Don’t use multiple *implementation* inheritance (multiple interface inheritance is fine)
-* *Reason:* It is not safe to upcast to a superclass with for example an implicit cast, if that superclass is part of a multiple inheritance. There is also the risk of the [diamond of death](https://en.wikipedia.org/wiki/Multiple_inheritance#The_diamond_problem).
+* *Reason:* It is not safe to upcast to a superclass with for example an implicit cast, if that superclass is part of a multiple inheritance. There is also the risk of the [diamond problem](https://en.wikipedia.org/wiki/Multiple_inheritance#The_diamond_problem).
 
 Don’t overuse implementation inheritance.
 * *Reason:* Spreading out logic over several classes makes the code harder to read. Object-orientation is not the solution to every problem. Templates are usually a more apt technique for algorithm generalization.
 
 Always specify `override` (or `final`) when overriding. (There is no need to declare the overriding function `virtual`.)
-* *Reason:* 
+* *Reason:* This is the only way of expressing that a function is an override, which is often very useful information.
 
 ## Operator overloading
 Do not overload `&&`, `||`, `“”`, `,` or unary `&`
-* *Reason:* `&&` and `||` will not have the same order of evaluation as their built-in counterparts. `""`, declaring your own literals, may make the code confusing to even experienced programmers. `,` 
+* *Reason:* `&&`, `||` and `,` cannot match the evaluation-order semantics of the built-in operators. `""`, declaring your own literals, may make the code confusing.
 
 Operator semantics should follow convention
 * *Reason:* The operators have a special place in the language and strong semantic connotations. Breaking convention will probably confuse and possible hide errors.
@@ -113,8 +113,10 @@ Overload only when it is not necessary for the reader to know which overload wil
 
 ## Default arguments
 Do not use default arguments on virtual functions
+* *Reason:* If the overrides declare different default arguments, the default used is determined by the static type of the object, subverting the whole idea of polymorphism (the feature is essentially broken).
 
-Only use default arguments when their values are guaranteed to always be the same (beware of type conversions)
+Only use default arguments when their values are guaranteed to always be the same (beware of type conversions).
+* *Reason:* Default arguments are re-evaluated at each call site, which can be extremely confusing if their value is unpredictable.
 
 When in doubt, use overloads
 * *See:*  Function overloading
@@ -129,29 +131,29 @@ Avoid unsigned unless that is the required behavior (bitfields and modulo overfl
 Prefer iterators and range-based for loops to indexing and size comparisons.
 * *Reason:* The `std` library uses the unsigned type `size_t` for all their containers (many think this is a mistake). Comparing signed and unsigned integers leads to tricky problems. Also, there is a clearer expression of intent and better encapsulation with iterators and range-based for loops.
 
-## Auto declaration
-Good to use for iterators that are long and cumbersome and similar cases
-* *Reason:* 
+## `auto` declaration
+Good to use for iterators that are long and cumbersome and similar cases.
+* *Reason:* Some types are not important enough to justify a long declaration.
 
-OK when the type is either unimportant or clear from local context
-* *Reason:* 
+OK when the type is either unimportant or clear from local context.
+* *Reason:* When the type is obvious without close inspection, `auto` is OK if it helps readability.
 
-May be a good idea for some complicated types because it avoids unintended copying or type conversions
-* *Reason:* 
+May be a good idea for some complicated types.
+* *Reason:* Some types, especially templated ones, are hard to figure out, and the programmer risks getting the type wrong. Unintended copying or type conversions may then occur. In those cases, `auto` may be justified, in combination with appropriate naming.
 
 Discouraged in all other cases, such as data members and larger contexts
-* *Reason:* 
+* *Reason:* In most cases, types are important information. Hiding them reduces readability.
 
 ## Lambda expressions
-Use explicit capture when lambas escape the current scope, both in regard to by-reference and by-value captures (since if the latter captures a pointer, such as `this`, that will be a shallow copy)
-* *Reason:* It is very easy to overlook the fact that 
+Use only explicit capture when lambas escape the current scope, both in regard to by-reference and by-value captures. It may be a good idea to avoid default capture alltogether except in very short lambdas.
+* *Reason:* Capture by reference, and by value in the case of pointers, means there is a shallow copy of each of those captures. When the lambda has a longer lifetime than the captured variable, the capture is the equivalent of a [dangling pointer](https://en.wikipedia.org/wiki/Dangling_pointer). Especially, this can be tricky in the case of `this`, which is automatically captured by both by-reference and by-value default captures, since this is implicitly used when member functions are called.
 
 ## Namespaces
-Do not use using directive to make a whole namespace available, except for project-local namespaces
-* *Reason:* 
+Do not use `using` directive to make a whole namespace available, except for project-local namespaces
+* *Reason:* Working with `using` directives can easily cause confusion as to what code is actually used.
 
-Use anonymous namespaces for file-private code
-* *Reason:* 
+Use anonymous namespaces for file-private definitions
+* *Reason:* Anonymous namespaces (as well as `static`) enables internal linkage, meaning they cannot be accessed or defined in another file. This makes the code safer, and also linking time is reduced.
 
 WIP: Use namespaces (how is undecided)
-* *Reason:* 
+* *Reason:* Namespaces prevents name collisions, both in compile time and in runtime.

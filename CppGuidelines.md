@@ -23,11 +23,21 @@ Avoid functions from the C library, especially the ones that require manual reso
 Clean up old code according to these guidelines as far as reasonably safe and manageable
 
 ## Resource management
-Don’t use naked `new` or `delete` (or their C counterparts, including functions that allocate resources that the user must free manually).
+Prefer automatic memory management. Only allocate on the heap when absolutely necessary.
+* *Reason:* Scopes in C++ are a very powerful tool for creating sound structure in the code. The lifetime of objects usually have a natural place in that scoped structure. Following this structure not only creates order, but also serves us error-, hassle-, and waste-free memory management. We should use it as much as we can.
+
+Don’t use naked `new` or `delete` (or their C counterparts, including functions that allocate resources that the user must free manually). The same principle holds for other resources, such as file handlers, sockets and locks.
 * *Reason:* It is virtually impossible to write robust code using manual resource management. Even when carefully done, manual resource management ruins exception safety (and error safety in general).
 
-Instead, manage memory automatically or in containers using the [RAII](https://en.cppreference.com/w/cpp/language/raii) pattern (from the std library when available), that are themselves automatically managed. RAII should also be applied for other resources, such as file handlers.
-* *Reason:* For automatically managed objects, the destructor is guaranteed to be run when the program leaves the scope of the object. We exploit this by freeing resources in the destructor.
+Instead, manage resources automatically or in containers using the [RAII](https://en.cppreference.com/w/cpp/language/raii) pattern (from the `std` library when available), that are themselves automatically managed. RAII should also be applied for other resources.
+* *Reason:* Dynamically allocated memory can be automatically managed by extension, relying on the symmetry and guarantees of constructor and destructor. For automatically managed objects, the destructor is guaranteed to be run when the program leaves the scope of the object. We exploit this by freeing all resources in destructors.
+
+## Raw pointers and references
+Raw pointer (`*`) and references (`&`) express non-ownership (except in RAII containers).
+* *See:* Resource management.
+
+Let raw pointers only point to single objects, as opposed to arrays.
+* *Reason:* There is really no need for built-in arrays anymore. Use `std::vector`, `std::string` or, when low overhead is needed, `std::array`.
 
 ## Smart pointers
 Only use smart pointers where there is an actual ownership. Arguments should usually be passed by reference (or pointer if `nullptr` is an acceptable value).
@@ -60,17 +70,22 @@ Declare `const` where appropriate.
 Pass complex types by pointer when `nullptr` is an acceptable value, otherwise by reference, as `const` when appropriate.
 * *Reason:* There is usually no point in passing an argument of complex type by value; a `const &` will be equivalent from the caller's perspective. There is also no point in passing a smart pointer, unless there is an actual transfer or sharing of ownership involved.
 
-## Static variables (including global)
-Static variables should only be primitives or constexpr. If for some reason there is need for more, be aware of the following:
-* Static variables (and their members and so on) must be trivially destructed (or dynamically allocated)
-* Non-local static variables must not be dynamically initialized
-* Consider the possibility that a class that now fulfills the two previous points may not do so in the future
+## Static variables
+* *Note:* Static class variables are essentially global variables, so the two will be referred to as "non-local static variables" below.
+
+Non-local static variables should always be `const`.
+* *Reason:* Modification of a non-local static variable is a completely unstructured way of passing information. As such, it is a common and hard-to-trace source of error.
+
+Static variables should only be primitives or `constexpr`. If for some reason there is need for more, be aware of the following:
+* Static variables (and their members and so on) must be trivially destructed (or dynamically allocated).
+* Non-local static variables must not be dynamically initialized.
+* Consider the possibility that a class that now fulfills the two previous conditions may not do so in the future.
 
 * *Reason:* Static memory is initialized in arbitrary order at process startup, and destructed in reverse order of initialization at process shutdown. It is therefore virtually impossible to know in the constructor or destructor if other resources are initialized or destroyed, unless those resources are compile-time constants. `constrexpr` ensures that an expression is evaluated at compile time, and is therefore not affected by static initialization and destruction.
 
 ## Classes and structs
 Constructors should not call virtual functions of the same class. The constructor should be kept fairly simple.
-* *Reason:* The type hierarchy is constructed top-down. If a virtual function is overloaded, it will be called on an object that is not yet constructed.
+* *Reason:* The type hierarchy is constructed top-down. If a virtual function is overloaded, it will be called on an object that is not yet constructed. If the logic is complicated, it may be hard to assert that a virtual function is not called indirectly.
 
 ## Default functions/constructors/destructor
 Use = default or = delete if there is no custom definition. Especially, be explicit about movability and copyability.
@@ -80,10 +95,10 @@ Use = default or = delete if there is no custom definition. Especially, be expli
 Minimize casts
 * *Reason:* Casts are usually necessary due to design flaws. Casts always introduce a risk of runtime error. `dynamic_cast` is safer, but a better alternative to it is usually [dynamic dispatch](https://en.wikipedia.org/wiki/Dynamic_dispatch).
 
-For class types, use the C++-cast that expresses your intent
+For class types, use the C++-cast that best expresses your intent.
 * *Reason:* C casts are equal to a C++ `reinterpret_cast`. Using them is to bypass all compile-time type checking. Error of reasoning from the programmer may lead to hard-to-detect runtime errors. `const_cast` and `static_cast` have more limited purposes and are therefore safer (but see previous point).
 
-* *Note:* C++ is full of implicit casts that are transparent and require a lot of understanding from the programmer; these are unfortunately all C casts. 
+* *Note:* C++ is full of implicit casts that are transparent and require a lot of understanding from the programmer; these are unfortunately all C casts. Unfortunately, this is just something every C++ programmer will have to live with and be especially aware of.
 
 ## Inheritance
 Don’t use multiple *implementation* inheritance (multiple interface inheritance is fine)
@@ -96,23 +111,23 @@ Always specify `override` (or `final`) when overriding. (There is no need to dec
 * *Reason:* This is the only way of expressing that a function is an override, which is often very useful information.
 
 ## Operator overloading
-Do not overload `&&`, `||`, `“”`, `,` or unary `&`
-* *Reason:* `&&`, `||` and `,` cannot match the evaluation-order semantics of the built-in operators. `""`, declaring your own literals, may make the code confusing.
+Do not overload `&&`, `||`, `“”`, `,` or unary `&`.
+* *Reason:* `&&`, `||` and `,` are not evaluated in the same order as their built-in versions. `""`, declaring your own literals, and overloading `&` will probably make the code confusing.
 
-Operator semantics should follow convention
+Operator semantics should follow convention.
 * *Reason:* The operators have a special place in the language and strong semantic connotations. Breaking convention will probably confuse and possible hide errors.
 
-Define non-modifying binary operators as non-member functions
+Define non-modifying binary operators as non-member functions.
 * *Reason:* If defined as members, the first operand will not follow the same implicit conversion rules as the second operand.
 
-* *See:* Function overloading
+* *See:* Function overloading.
 
 ## Function overloading
-Overload only when it is not necessary for the reader to know which overload will be called (there are no semantic differences)
+Overload only when it is not necessary for the reader to know which overload will be called (there are no semantic differences).
 * *Reason:* The rules of overloading are tricky, especially in combination with inheritance. They depend on implicit type casts, that are hard to anticipate, that may also change as the types of arguments are modified.
 
 ## Default arguments
-Do not use default arguments on virtual functions
+Do not use default arguments on virtual functions.
 * *Reason:* If the overrides declare different default arguments, the default used is determined by the static type of the object, subverting the whole idea of polymorphism (the feature is essentially broken).
 
 Only use default arguments when their values are guaranteed to always be the same (beware of type conversions).
@@ -122,11 +137,11 @@ When in doubt, use overloads
 * *See:*  Function overloading
 
 ## Integer types
-Use only int of the built-in integer types
+Use only int of the built-in integer types.
 * *Reason:* The built-in integer types are not standardized. If there is need for a certain size, use the definitions from `stdint.h`, such as `int64_t`.
 
 Avoid unsigned unless that is the required behavior (bitfields and modulo overflow). In particular, do not use unsigned to assert that a variable is non-negative.
-* *Reason:* Underflow of unsigned integers will easily lead to errors.
+* *Reason:* Underflow of unsigned integers will easily cause errors.
 
 Prefer iterators and range-based for loops to indexing and size comparisons.
 * *Reason:* The `std` library uses the unsigned type `size_t` for all their containers (many think this is a mistake). Comparing signed and unsigned integers leads to tricky problems. Also, there is a clearer expression of intent and better encapsulation with iterators and range-based for loops.
@@ -141,19 +156,19 @@ OK when the type is either unimportant or clear from local context.
 May be a good idea for some complicated types.
 * *Reason:* Some types, especially templated ones, are hard to figure out, and the programmer risks getting the type wrong. Unintended copying or type conversions may then occur. In those cases, `auto` may be justified, in combination with appropriate naming.
 
-Discouraged in all other cases, such as data members and larger contexts
+Discouraged in all other cases, such as data members and larger contexts.
 * *Reason:* In most cases, types are important information. Hiding them reduces readability.
 
 ## Lambda expressions
-Use only explicit capture when lambas escape the current scope, both in regard to by-reference and by-value captures. It may be a good idea to avoid default capture alltogether except in very short lambdas.
-* *Reason:* Capture by reference, and by value in the case of pointers, means there is a shallow copy of each of those captures. When the lambda has a longer lifetime than the captured variable, the capture is the equivalent of a [dangling pointer](https://en.wikipedia.org/wiki/Dangling_pointer). Especially, this can be tricky in the case of `this`, which is automatically captured by both by-reference and by-value default captures, since this is implicitly used when member functions are called.
+Avoid default capture, both in regard to by-reference (`[&]`) and by-value (`[=]`) captures. Especially, always use explicit capture when the lamba has a longer lifetime than the current scope. In the case of very short lambdas default capture may be beneficial.
+* *Reason:* Capture by reference, and by value in the case of pointers, makes a shallow copy of each of those captures. When the lambda has a longer lifetime than the captured variable, the capture is in effect a [dangling pointer](https://en.wikipedia.org/wiki/Dangling_pointer). Especially, this can be tricky in the case of `this`, which is automatically captured by both by-reference and by-value default captures, since `this` is implicitly used when members are called.
 
 ## Namespaces
-Do not use `using` directive to make a whole namespace available, except for project-local namespaces
-* *Reason:* Working with `using` directives can easily cause confusion as to what code is actually used.
+Do not use `using` directive to make a whole namespace available, except for project-local namespaces.
+* *Reason:* Using `using` directives can easily cause confusion as to what code is actually used.
 
-Use anonymous namespaces for file-private definitions
+Use anonymous namespaces for file-private definitions.
 * *Reason:* Anonymous namespaces (as well as `static`) enables internal linkage, meaning they cannot be accessed or defined in another file. This makes the code safer, and also linking time is reduced.
 
-WIP: Use namespaces (how is undecided)
-* *Reason:* Namespaces prevents name collisions, both in compile time and in runtime.
+WIP: Use namespaces (how is undecided).
+* *Reason:* Namespaces prevent name collisions, both at compile time and at runtime.

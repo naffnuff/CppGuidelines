@@ -53,11 +53,11 @@ When changing old systems, keep exception safety in mind for all affected code.
 * *Reason:* Code will have to be converted very carefully, small sections at a time, probably starting in the leaves of the call hierarchy, going up.
 
 ## Declarations
-Declare const where appropriate
-* *Reason:* `const` gives an important indication of intent and what to expect, that makes the code more maintainable. It can be very difficult to add as an afterthought.
+Declare `const` where appropriate.
+* *Reason:* `const` gives an important indication of intent and what to expect, that makes the code more maintainable. It can be difficult to add as an afterthought.
 
 ## Arguments
-Pass complex types by pointer when `nullptr` is an acceptable value, otherwise by reference. Add `const` when appropriate.
+Pass complex types by pointer when `nullptr` is an acceptable value, otherwise by reference, as `const` when appropriate.
 * *Reason:* There is usually no point in passing an argument of complex type by value; a `const &` will be equivalent from the caller's perspective. There is also no point in passing a smart pointer, unless there is an actual transfer or sharing of ownership involved.
 
 ## Static variables (including global)

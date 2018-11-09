@@ -18,7 +18,7 @@ Use the `std` library whenever possible.
 * *Reason:* It's state-of-the-art.
 
 Avoid functions from the C library, especially the ones that require manual resource management.
-* *Reason:* It's a thing of the past. Pretty much anything they do, `std` will do better and safer.
+* *Reason:* It's a thing of the past. Pretty much anything they do, `std` does better and safer.
 
 Clean up old code according to these guidelines as far as reasonably safe and manageable.
 * *Reason:* It's an investment that will save us time and misery in the long run.
@@ -35,7 +35,7 @@ Instead, manage resources automatically or in containers using the [RAII](https:
 
 ## Raw pointers and references
 Raw pointer (`*`) and references (`&`) express non-ownership (except in RAII containers).
-* *See:* Resource management.
+* *See:* Resource management and Smart pointers.
 
 Let raw pointers only point to single objects, as opposed to arrays.
 * *Reason:* There is really no need for built-in arrays anymore. Use `std::vector`, `std::string` or, when low overhead is needed, `std::array`.
@@ -44,7 +44,7 @@ Let raw pointers only point to single objects, as opposed to arrays.
 Only use smart pointers where there is an actual ownership. Arguments should usually be passed by reference (or pointer if `nullptr` is an acceptable value).
 * *Reason:* Smart pointers can be a result of sloppy design, especially shared pointers. If you're using C++ like Java, then you probably made a big mistake picking C++ in the first place. They come at a cost, so use them when necessary.
 
-Use `std::shared_ptr` when shared ownership of an object is necessary. If it makes more sense with single ownership of an object (as is ofte the case), use `std::unique_ptr`, and transfer that ownership with `std::move()`.
+Prefer `std::unique_ptr`. Use `std::shared_ptr` only when shared ownership of an object is necessary. If it makes more sense with single ownership of an object (as is ofte the case), use `std::unique_ptr`, and transfer that ownership with `std::move()`.
 * *Reason:* Shared pointers add complexity and overhead, and are often unnecessary. `std::unique_ptr` also expresses a guarantee that there is a single ownership of an object, thereby making a the code a lot easier to reason about.
 
 ## Exceptions

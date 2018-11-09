@@ -1,6 +1,6 @@
 # C++ Guidelines
 
-This document focuses on the many subtle pitfalls and hazards that often plague C++ code. Decisions on formatting, naming and other arbitrary judgments should be kept in a different document.
+This document focuses on the many subtle, yet avoidable, pitfalls and hazards that often plague C++ code. Decisions on formatting, naming and other arbitrary judgments should be kept in a different document.
 
 Many of the points below are discussed in more detail in the [Google Style Guide](https://google.github.io/styleguide/cppguide.html) and in the [C++ Core Guidelines](http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines).
 

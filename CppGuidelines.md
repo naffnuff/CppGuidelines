@@ -90,7 +90,7 @@ Constructors should not call virtual functions of the same class. The constructo
 
 ## Default functions/constructors/destructor
 Use = default or = delete if there is no custom definition. Especially, be explicit about movability and copyability.
-* *Reason:* Types are copyable and moveable by default, but if there is no explicit declaration, there is good reason to suspect that creator of that type has not thought about what it means for an object of that type to be copied. Moving an object is usually a more efficient operation than copying it, that is used in those cases when the old object is guaranteed to be unused, such as when returned from a function, but it also makes sense to have some classes as moveable but not copyable, as for example with `std::unique-ptr`.
+* *Reason:* Types are copyable and moveable by default, but if there is no explicit declaration, there is good reason to suspect that the creator of that type has not thought about what it means for an object of that type to be copied. Moving an object is usually a more efficient operation than copying it, that is used in those cases when the old object is guaranteed to be unused, such as when returned from a function, but it also makes sense to have some classes as moveable but not copyable, as for example with `std::unique_ptr`.
 
 ## Casts (not including conversion casts)
 Minimize casts

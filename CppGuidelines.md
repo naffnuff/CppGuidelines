@@ -25,7 +25,7 @@ Clean up old code according to these guidelines as far as reasonably safe and ma
 
 ## Resource management
 Prefer automatic memory management. Only allocate on the heap when absolutely necessary.
-* *Reason:* Scopes in C++ are a very powerful tool for creating sound structure in the code. The lifetime of objects usually have a natural place in that scoped structure. Following this structure not only creates order, but also serves us error-, hassle-, and waste-free memory management. We should use it as much as we can.
+* *Reason:* Scopes in C++ are a very powerful tool for having sound structure in the code. The lifetime of objects usually have a natural place in that scoped structure. Following this structure not only creates order, but also serves us error-, hassle-, and waste-free memory management. We should use it as much as we can.
 
 Don’t use naked `new` or `delete` (or their C counterparts, including functions that allocate resources that the user must free manually). The same principle holds for other resources, such as file handlers, sockets and locks.
 * *Reason:* It is virtually impossible to write robust code using manual resource management. Even when carefully done, manual resource management ruins exception safety (and error safety in general).

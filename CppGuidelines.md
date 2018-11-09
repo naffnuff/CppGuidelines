@@ -34,14 +34,14 @@ Instead, manage resources automatically or in containers using the [RAII](https:
 * *Reason:* Dynamically allocated memory can be automatically managed by extension, relying on the symmetry and guarantees of constructor and destructor. For automatically managed objects, the destructor is guaranteed to be run when the program leaves the scope of the object. We exploit this by freeing all resources in destructors.
 
 ## Raw pointers and references
-Raw pointer (`*`) and references (`&`) express non-ownership (except in RAII containers).
+Raw pointers (`A* a`) and references (`A& a`) express non-ownership (except in RAII containers).
 * *See:* Resource management and Smart pointers.
 
 Let raw pointers only point to single objects, as opposed to arrays.
 * *Reason:* There is really no need for built-in arrays anymore. Use `std::vector`, `std::string` or, when low overhead is needed, `std::array`.
 
 ## Smart pointers
-Only use smart pointers where there is an actual ownership. Arguments should usually be passed by reference (or pointer if `nullptr` is an acceptable value).
+Only use smart pointers where there is an actual expression of ownership. Arguments should usually be passed by reference (or pointer if `nullptr` is an acceptable value).
 * *Reason:* Smart pointers can be a result of sloppy design, especially shared pointers. If you're using C++ like Java, then you probably made a big mistake picking C++ in the first place. They come at a cost, so use them when necessary.
 
 Prefer `std::unique_ptr`. Use `std::shared_ptr` only when shared ownership of an object is necessary. If it makes more sense with single ownership of an object (as is ofte the case), use `std::unique_ptr`, and transfer that ownership with `std::move()`.

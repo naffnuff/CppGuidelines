@@ -5,22 +5,22 @@ This document focuses on the many subtle pitfalls and hazards that often plague 
 Many of the points below are discussed in more detail in the [Google Style Guide](https://google.github.io/styleguide/cppguide.html) and in the [C++ Core Guidelines](http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines).
 
 ## General
-Make it easy for the reader, not the writer
+Make it easy for the reader, not the writer.
 * *Reason:* We usually spend much more time reading code than writing it. Taking shortcuts will surely be a waste of time.
 
-Avoid writing surprising or confusing code
+Avoid writing surprising or confusing code.
 * *Reason:* For every problem, there is probably an efficient standard solution.
 
-Prefer readable over excessively “clever” coding
+Prefer readable over excessively “clever” coding.
 * *Reason:* Readability is key to maintainability and correctnes. Esoteric code often leads to hard-to-detect errors down the road.
 
-Use the `std` library whenever possible
+Use the `std` library whenever possible.
 * *Reason:* It's state-of-the-art.
 
-Avoid functions from the C library, especially the ones that require manual resource management
+Avoid functions from the C library, especially the ones that require manual resource management.
 * *Reason:* It's a thing of the past. Pretty much anything they do, `std` will do better and safer.
 
-Clean up old code according to these guidelines as far as reasonably safe and manageable
+Clean up old code according to these guidelines as far as reasonably safe and manageable.
 
 ## Resource management
 Prefer automatic memory management. Only allocate on the heap when absolutely necessary.

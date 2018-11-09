@@ -21,6 +21,7 @@ Avoid functions from the C library, especially the ones that require manual reso
 * *Reason:* It's a thing of the past. Pretty much anything they do, `std` will do better and safer.
 
 Clean up old code according to these guidelines as far as reasonably safe and manageable.
+* *Reason:* It's an investment that will save us time and misery in the long run.
 
 ## Resource management
 Prefer automatic memory management. Only allocate on the heap when absolutely necessary.

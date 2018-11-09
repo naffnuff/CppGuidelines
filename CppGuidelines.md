@@ -12,7 +12,7 @@ Avoid writing surprising or confusing code
 * *Reason:* For every problem, there is probably an efficient standard solution.
 
 Prefer readable over excessively “clever” coding
-* *Reason:* Readability is key to maintainability and correctnes. Esoteric often leads to hard-to-detect errors down the road.
+* *Reason:* Readability is key to maintainability and correctnes. Esoteric code often leads to hard-to-detect errors down the road.
 
 Use the `std` library whenever possible
 * *Reason:* It's state-of-the-art.
@@ -23,34 +23,34 @@ Avoid functions from the C library, especially the ones that require manual reso
 Clean up old code according to these guidelines as far as reasonably safe and manageable
 
 ## Resource management
-Don’t use naked `new` or `delete` (or their C counterparts, including functions that allocate memory that the user must free manually).
+Don’t use naked `new` or `delete` (or their C counterparts, including functions that allocate resources that the user must free manually).
 * *Reason:* It is virtually impossible to write robust code using manual resource management. Even when carefully done, manual resource management ruins exception safety (and error safety in general).
 
 Instead, manage memory automatically or in containers using the [RAII](https://en.cppreference.com/w/cpp/language/raii) pattern (from the std library when available), that are themselves automatically managed. RAII should also be applied for other resources, such as file handlers.
-* *Reason:* For automatically managed objects, the destructor is guaranteed to be run when the object goes out of scope. We exploit this by freeing resources in the destructor.
+* *Reason:* For automatically managed objects, the destructor is guaranteed to be run when the program leaves the scope of the object. We exploit this by freeing resources in the destructor.
 
 ## Smart pointers
 Only use smart pointers where there is an actual ownership. Arguments should usually be passed by reference (or pointer if `nullptr` is an acceptable value).
-* *Reason:* Smart pointers can be a result of sloppy design, especially shared pointers. If you're using C++ like Java, then you probably made a big mistake picking C++ in the first place. They come at a cost, so avoid them when possible.
+* *Reason:* Smart pointers can be a result of sloppy design, especially shared pointers. If you're using C++ like Java, then you probably made a big mistake picking C++ in the first place. They come at a cost, so use them when necessary.
 
-Use `std::shared_ptr` when shared ownership of an object is necessary. If it makes more sense with single ownership of an object, use `std::unique_ptr`, and transfer that ownership with `std::move()`.
-* *Reason:* Shared pointers add complexity and overhead, and are often unnecessary. `std::unique_ptr` also expresses a guarantee that ownership will not be shared.
+Use `std::shared_ptr` when shared ownership of an object is necessary. If it makes more sense with single ownership of an object (as is ofte the case), use `std::unique_ptr`, and transfer that ownership with `std::move()`.
+* *Reason:* Shared pointers add complexity and overhead, and are often unnecessary. `std::unique_ptr` also expresses a guarantee that there is a single ownership of an object, thereby making a the code a lot easier to reason about.
 
 ## Exceptions
 In general, exceptions are a good way of handling errors.
-* *Reason:* Exceptions leads to less code devoted to error handling, and mostly frees the return value from being a mere error code. Also, exceptions are automatically propagated up in the call hierarchy in a way error codes are not, and may thus more easily be handled in the right scope. Note that the exception safety is just a specific case of error safety; avoiding exceptions does not solve that problem.
+* *Reason:* Exceptions leads to less code devoted to error handling, and typically frees the return value from acting as an error code. Also, uncaught exceptions are automatically propagated up in the call hierarchy in a way error codes are not, which simplifies structured error handling. Note that exception safety is just a specific case of error safety; avoiding exceptions does not make code error safe.
 
 All exceptions we use should implement `std::exception`. `std::runtime_exception` is the go-to implementation.
 * *Reason:* In order to be sure that we catch all exceptions, they must have a common superclass. As always, we prefer `std` types when available.
 
 Everything that can be affected by an exception must be exception-safe. Note that specifically this means that the [RAII](https://en.cppreference.com/w/cpp/language/raii) pattern is used. All std containers follow RAII and are thus exception-safe.
-* *Reason:* 
+* *Reason:* New standards make the issue of error safety manageble. There is no point in introducing exceptions if the code does not use the other modern constructs that go along with them. Also, many `std` functions may throw exceptions.
 
 Don't use `throw`. Declare `noexcept` where appropriate; all other functions should be expected to throw.
-* *Reason:* It is very hard and cumbersome to cover every exception that could be thrown from a function. It is more manageable to see throwing behavior as the rule, and `nothrow` as the exception.
+* *Reason:* It is very hard and cumbersome to cover every exception that could be thrown from a function. It is more manageable to see throwing behavior as the rule, and `nothrow` as the exception. Also, `throw` is deprecated.
 
-When changing old systems, keep exception safety in mind, and don’t assume anything.
-* *Reason:* Exceptions make the issue of error safety more manageble, since there is something concrete to do about it. Code will have to be converted very carefully, small sections at a time, probably starting in the leaves of the call hierarchy, going up.
+When changing old systems, keep exception safety in mind for all affected code.
+* *Reason:* Code will have to be converted very carefully, small sections at a time, probably starting in the leaves of the call hierarchy, going up.
 
 ## Declarations
 Declare const where appropriate

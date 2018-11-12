@@ -1,4 +1,4 @@
-# C++ Guidelines
+# Utopia C++ Guidelines
 
 This document focuses on the many subtle pitfalls and hazards that often plague C++ code. Decisions on formatting, naming and other more or less arbitrary choices should be kept in a different document.
 
@@ -17,8 +17,8 @@ Prefer readable over excessively “clever” coding.
 Use the `std` library whenever possible.
 * *Reason:* It's the result of a peer-reviewed process involving some of the sharpest minds in academic computer science. And it is specifically designed to be useful for pretty much any code you will write.
 
-Avoid functions from the C library, especially the ones that forces us to manual resource management.
-* *Reason:* They make the whole code base more error-prone and less robust. Pretty much anything they do, `std` does better and safer. Regard it as an early prototype of what we have today.
+Avoid functions from the C library, especially the ones that force us into manual resource management.
+* *Reason:* They make the code base more error-prone and less robust. Pretty much anything they do, `std` does better and safer.
 
 Clean up old code according to these guidelines as far as reasonably safe and manageable.
 * *Reason:* It's an investment that will save us time and misery in the long run.
@@ -27,11 +27,11 @@ Clean up old code according to these guidelines as far as reasonably safe and ma
 Prefer automatic memory management. Only allocate on the heap when absolutely necessary.
 * *Reason:* Scopes in C++ are a very powerful tool for sound structure in the code. The lifetime of objects usually have a natural place in that scoped structure. Following this structure not only creates order, but also serves us error-, hassle-, and waste-free memory management. We should use it as much as we can.
 
-Don’t use naked `new` or `delete` (or their C counterparts, including functions that allocate resources that the user must free manually). The same principle holds for other resources, such as file handlers, sockets and locks.
+Don’t use naked `new` or `delete`. The same principle holds for other resources, such as file handlers, sockets and locks.
 * *Reason:* It is virtually impossible to write structured and robust code using manual resource management. Even when carefully done, manual resource management ruins exception safety (and error safety in general).
 
 Instead, manage resources automatically or in containers using the [RAII](https://en.cppreference.com/w/cpp/language/raii) pattern (from the `std` library when available), that are themselves automatically managed. RAII should also be applied for other resources.
-* *Reason:* Dynamically allocated memory can be automatically managed by extension, relying on the symmetry and guarantees of constructor and destructor. For automatically managed objects, the destructor is guaranteed to be run when the program leaves the scope of the object. We exploit this by freeing all resources in destructors.
+* *Reason:* Dynamically allocated memory can be automatically managed by extension. For automatically managed objects, the destructor is guaranteed to be run when the program leaves the scope of the object. We exploit this by freeing resources in the destructor.
 
 ## Raw pointers and references
 Raw pointers (`A* a`) and references (`A& a`) express non-ownership (except in RAII containers).
@@ -40,8 +40,8 @@ Raw pointers (`A* a`) and references (`A& a`) express non-ownership (except in R
 Let raw pointers only point to single objects, as opposed to arrays.
 * *Reason:* There is really no need for built-in arrays anymore. Use `std::vector`, `std::string` or, for a thin abstraction of the built-in array, `std::array`.
 
-Polymorphic objects will mostly have to be held by (smart) pointer or reference, not by value.
-* *Reason:* For polymorphic objects, value semantics causes [object slicing](https://en.wikipedia.org/wiki/Object_slicing). That is, copying is done using only static type information, and dynamic data is thereby destroyed.
+Polymorphic objects must be held by (smart) pointer or reference, not by value.
+* *Reason:* For polymorphic objects, value semantics causes [object slicing](https://en.wikipedia.org/wiki/Object_slicing). That is, copying is done using only static type information, and dynamic data is thereby corrupted and/or leaked.
 
 ## Smart pointers
 Only use smart pointers where there is an actual ownership. Arguments should usually be passed by reference (or pointer if `nullptr` is an acceptable value).
@@ -60,7 +60,7 @@ All exceptions we use should implement `std::exception`. `std::runtime_exception
 Always catch exceptions by reference. Do not create exceptions with `new`.
 * *Reason:* Adding dynamic memory management to exception handling is pointless and creates memory leaks. Catching by value would disable the polymorphism we require by using std::exception. Catching by pointer and by reference cannot be done by the same catch clause.
 
-Everything that can be affected by an exception must be exception-safe. Note that specifically this means that the [RAII](https://en.cppreference.com/w/cpp/language/raii) pattern is used. All std containers follow RAII and are thus exception-safe.
+Everything that can be affected by an exception must be exception-safe. This means that the [RAII](https://en.cppreference.com/w/cpp/language/raii) pattern is used. All std containers follow RAII and are thus exception-safe.
 * *Reason:* New standards make the issue of error safety manageble. There is no point in introducing exceptions if the code does not use the other modern constructs that go along with them. Also, many `std` functions may throw exceptions.
 
 Don't use `throw`. Declare `noexcept` where appropriate; all other functions should be expected to throw.
@@ -74,7 +74,7 @@ Declare `const` where appropriate.
 * *Reason:* `const` gives an important indication of intent and what to expect, that makes the code more maintainable. It can be difficult to add as an afterthought.
 
 ## Arguments
-Receive complex types by pointer when `nullptr` is an acceptable value, otherwise by reference, as `const` when appropriate.
+Receive complex types by pointer when `nullptr` is an acceptable value, otherwise by reference; `const` when appropriate.
 * *Reason:* There is usually no point in passing an argument of complex type by value; a `const &` will be equivalent from the caller's perspective. There is also no point in passing a smart pointer, unless there is an actual transfer or sharing of ownership involved.
 
 ## Static variables
@@ -91,21 +91,21 @@ Static variables should only be primitives or `constexpr`. If for some reason th
 * *Reason:* Static memory is initialized in arbitrary order at process startup, and destructed in reverse order of initialization at process shutdown. It is therefore virtually impossible to know in the constructor or destructor if other resources are initialized or destroyed, unless those resources are compile-time constants. `constrexpr` ensures that an expression is evaluated at compile time, and is therefore not affected by static initialization and destruction.
 
 ## Classes and structs
-Constructors should not call virtual functions of the same class. The constructor should be kept fairly simple.
+Constructors should not call virtual functions of the same class. Constructors should be kept fairly simple.
 * *Reason:* The type hierarchy is constructed top-down. If a virtual function is overloaded, it will be called on an object that is not yet constructed. Unfortunately, there is no static check for this. If the logic is complicated, it may be hard to assert that a virtual function is not called indirectly.
 
 ## Default functions/constructors/destructor
 Use `= default` or `= delete` if there is no custom definition. Especially, be explicit about movability and copyability.
 * *Reason:* Types are copyable and moveable by default, but if there is no explicit declaration, there no way of knowing if the designer of that type has thought about what it means for an object of that type to be copied, or moved. Move is often essentially a more efficient version of copy, and often it makes no sense to define it, but it also makes sense to have some types moveable but not copyable, such as `std::unique_ptr`. Being explicit conveys important information.
 
-## Casts (not including conversion casts)
+## Casts of complex types
 Minimize casts
 * *Reason:* Casts are usually necessary due to design flaws. Casts always introduce a risk of runtime error. `dynamic_cast` is safer, but a better alternative to it is usually [dynamic dispatch](https://en.wikipedia.org/wiki/Dynamic_dispatch).
 
-For class types, use the C++-cast that best expresses your intent.
+Use the C++-cast that best expresses your intent.
 * *Reason:* C casts are equal to a C++ `reinterpret_cast`. Using them is to bypass all compile-time type checking. Error of reasoning from the programmer may lead to hard-to-detect runtime errors. `const_cast` and `static_cast` have more limited purposes and are therefore safer (but see previous point).
 
-Declare constructors that take one argument `explicit` (copy and move constructors excepted), unless they are intended as implicit conversion constructors.
+Declare constructors that take one argument (copy and move constructors excepted) `explicit`, unless they are intensional implicit conversion constructors.
 * *Reason:* A non-`explicit` constructor that takes one argument will enable implicit type conversions from the argument type to the constructed type.
 
 * *Note:* C++ is full of implicit casts and conversions that are transparent and require a lot of understanding for the programmer even to be aware of them. These are all C casts. This is something that every C++ programmer will just have to live with and be especially aware of.
@@ -114,11 +114,13 @@ Declare constructors that take one argument `explicit` (copy and move constructo
 Don’t use multiple *implementation* inheritance.
 * *Reason:* It is not safe to upcast to a superclass with for example an implicit cast, if that superclass is part of a multiple inheritance. There is also the risk of the [diamond problem](https://en.wikipedia.org/wiki/Multiple_inheritance#The_diamond_problem).
 
-Don’t overuse implementation inheritance.
+Don’t overuse (single) implementation inheritance.
 * *Reason:* Spreading out logic over several classes makes the code harder to read. Object-orientation is not the solution to every problem. Templates are often a more apt technique for algorithm generalization.
 
-Always specify `override` (or `final`) when overriding. (There is no need to declare the overriding function `virtual`.)
+Always specify `override` (or `final`) when overriding.
 * *Reason:* This is the only way of expressing that a function is an override, which is often very useful information.
+* *Note:* Old code does use this keyword simply because it was not available until fairly recently. Adding it to old code is simple and safe.
+* *Note:* It is entirely redundant to declare an overriding function `virtual` once it is specified `override`. Some old code does this to be clear.
 
 ## Operator overloading
 Do not overload `&&`, `||`, `“”`, `,` or unary `&`.
@@ -150,7 +152,7 @@ When in doubt, use overloads
 Use only int of the built-in integer types.
 * *Reason:* The built-in integer types are not standardized. If there is need for a certain size, use the definitions from `stdint.h`, such as `int64_t`.
 
-Avoid unsigned unless that is the required behavior (bitfields and modulo overflow). In particular, do not use unsigned to assert that a variable is non-negative.
+Avoid unsigned unless that is the required behavior (bitfields and modulo overflow). Especially, do not use unsigned to assert that a variable is non-negative.
 * *Reason:* Underflow of unsigned integers will easily confuse and cause errors.
 
 Prefer iterators and range-based for loops to indexing and size comparisons.
@@ -177,7 +179,7 @@ Avoid default capture, both for by-reference (`[&]`) and by-value (`[=]`) captur
 Do not use `using` directive to make a whole namespace available, except for project-local namespaces.
 * *Reason:* Using `using` directives can easily cause confusion as to what code is actually used.
 
-Use anonymous namespaces for file-private definitions.
+Use anonymous namespaces for file-private declarations and definitions.
 * *Reason:* Anonymous namespaces (as well as `static`) enables internal linkage, meaning they cannot be accessed or defined in another file. This makes the code safer, and also linking time is reduced.
 
 WIP: Use namespaces (how is undecided).

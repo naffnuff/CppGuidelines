@@ -1,4 +1,4 @@
-# Utopia C++ Guidelines
+# My C++ Guidelines
 
 This document focuses on the many subtle pitfalls and hazards that often plague C++ code. Decisions on formatting, naming and other more or less arbitrary choices should be kept in a different document.
 

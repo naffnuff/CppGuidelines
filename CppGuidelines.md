@@ -80,7 +80,7 @@ Receive complex types by pointer when `nullptr` is an acceptable value, otherwis
 ## Static variables
 * *Note:* Static class variables are essentially global variables, so the two will be referred to as "non-local static variables" below.
 
-Non-local static variables should always be `const`.
+Non-local static variables should always be `const` or `constexpr`.
 * *Reason:* Modification of a non-local static variable is a completely unstructured way of passing information. As such, it is a common and hard-to-trace source of error.
 
 Static variables should only be primitives or `constexpr`. If for some reason there is need for more, be aware of the following:
@@ -105,7 +105,7 @@ Minimize casts
 Use the C++-cast that best expresses your intent.
 * *Reason:* C casts are equal to a C++ `reinterpret_cast`. Using them is to bypass all compile-time type checking. Error of reasoning from the programmer may lead to hard-to-detect runtime errors. `const_cast` and `static_cast` have more limited purposes and are therefore safer (but see previous point).
 
-Declare constructors that take one argument (copy and move constructors excepted) `explicit`, unless they are intensional implicit conversion constructors.
+Declare constructors that take one argument (copy and move constructors excepted) `explicit`, unless they are intentional implicit conversion constructors.
 * *Reason:* A non-`explicit` constructor that takes one argument will enable implicit type conversions from the argument type to the constructed type.
 
 * *Note:* C++ is full of implicit casts and conversions that are transparent and require a lot of understanding for the programmer even to be aware of them. These are all C casts. This is something that every C++ programmer will just have to live with and be especially aware of.

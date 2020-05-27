@@ -45,7 +45,7 @@ Polymorphic objects must be held by (smart) pointer or reference, not by value.
 
 ## Smart pointers
 Only use smart pointers where there is an actual ownership. Arguments should usually be passed by reference (or pointer if `nullptr` is an acceptable value).
-* *Reason:* Smart pointers can be a result of sloppy design, especially shared pointers. If you're using C++ like Java, then you probably made a big mistake picking C++ in the first place. They come at a cost, so use them when necessary.
+* *Reason:* Smart pointers can be a result of sloppy design, especially shared pointers. They come at a cost, so use them when necessary.
 
 Prefer `std::unique_ptr`. Use `std::shared_ptr` only when shared ownership of an object is necessary. If it makes more sense with single ownership of an object (as is often the case), use `std::unique_ptr`, and transfer that ownership with `std::move()`.
 * *Reason:* Shared pointers add complexity and overhead, and are often unnecessary. `std::unique_ptr` expresses a guarantee that there is a single ownership of an object, making a the code more efficient and easier to reason about.

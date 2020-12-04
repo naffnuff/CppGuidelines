@@ -20,7 +20,7 @@
 |           |`delete`   `delete[]`|Dynamic memory deallocation                              |             |
 |4          |`.*`   `->*`         |Pointer-to-member                                        |Left-to-right|
 |5          |`a * b`   `a / b`   `a % b`|Multiplication, division, and remainder                  |             |
-|6          |`a+b`   `a-b`        |Addition and subtraction                                 |             |
+|6          |`a + b`   `a - b`        |Addition and subtraction                                 |             |
 |7          |`<<`   `>>`          |Bitwise left shift and right shift                       |             |
 |8          |`<=>`                |Three-way comparison operator (since C++20)              |             |
 |9          |`<`   `<=`           |For relational operators < and ≤ respectively            |             |
@@ -31,7 +31,7 @@
 |13         |`\|`                 |Bitwise OR (inclusive or)                                |             |
 |14         |`&&`                 |Logical AND                                              |             |
 |15         |`\|\|`               |Logical OR                                               |             |
-|16         |`a?b:c`              |Ternary conditional [note 2]                             |Right-to-left|
+|16         |`a ? b : c`              |Ternary conditional [note 2]                             |Right-to-left|
 |           |`throw`              |throw operator                                           |             |
 |           |`co_yield`           |yield-expression (C++20)                                 |             |
 |           |`=`                  |Direct assignment (provided by default for C++ classes)  |             |

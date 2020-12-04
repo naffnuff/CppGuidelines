@@ -1,3 +1,5 @@
+*C++ Operator Precedence
+
 |Precedence |Operator             |Description                                              |Associativity|
 |:---------:|:-------------------:|---------------------------------------------------------|-------------|
 |1          |`::`                 |Scope resolution                                         |Left-to-right|

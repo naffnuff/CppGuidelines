@@ -1,4 +1,4 @@
-## C++ Operator Precedence
+### C++ Operator Precedence
 
 |Precedence |Operator             |Description                                              |Associativity|
 |:---------:|:-------------------:|---------------------------------------------------------|-------------|

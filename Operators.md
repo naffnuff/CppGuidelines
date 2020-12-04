@@ -1,5 +1,5 @@
 |Precedence |Operator             |Description                                              |Associativity|
-|:---------:|---------------------|---------------------------------------------------------|-------------|
+|:---------:|:-------------------:|---------------------------------------------------------|-------------|
 |1          |`::`                 |Scope resolution                                         |Left-to-right|
 |2          |`a++`   `--`         |Suffix/postfix increment and decrement                   |             |
 |           |`type()`   `type{}`  |Functional cast                                          |             |
@@ -12,7 +12,7 @@
 |           |`(type)`             |C-style cast                                             |             |
 |           |`*a`                 |Indirection (dereference)                                |             |
 |           |`&a`                 |Address-of                                               |             |
-|           |`sizeof`             |Size-of[note 1]                                          |             |
+|           |`sizeof`             |Size-of [note 1]                                         |             |
 |           |`co_await`           |await-expression (C++20)                                 |             |
 |           |`new`   `new[]`      |Dynamic memory allocation                                |             |
 |           |`delete`   `delete[]`|Dynamic memory deallocation                              |             |
@@ -29,7 +29,7 @@
 |13         |`\|`                 |Bitwise OR (inclusive or)                                |             |
 |14         |`&&`                 |Logical AND                                              |             |
 |15         |`\|\|`               |Logical OR                                               |             |
-|16         |`a?b:c`              |Ternary conditional[note 2]                              |Right-to-left|
+|16         |`a?b:c`              |Ternary conditional [note 2]                             |Right-to-left|
 |           |`throw`              |throw operator                                           |             |
 |           |`co_yield`           |yield-expression (C++20)                                 |             |
 |           |`=`                  |Direct assignment (provided by default for C++ classes)  |             |

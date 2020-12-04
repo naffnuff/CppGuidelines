@@ -1,5 +1,5 @@
 |Precedence |Operator             |Description                                              |Associativity|
-|-----------|---------------------|---------------------------------------------------------|-------------|
+|:---------:|---------------------|---------------------------------------------------------|-------------|
 |1          |`::`                 |Scope resolution                                         |Left-to-right|
 |2          |`a++`   `--`         |Suffix/postfix increment and decrement                   |             |
 |           |`type()`   `type{}`  |Functional cast                                          |             |

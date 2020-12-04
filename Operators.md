@@ -19,7 +19,7 @@
 |           |`new`   `new[]`      |Dynamic memory allocation                                |             |
 |           |`delete`   `delete[]`|Dynamic memory deallocation                              |             |
 |4          |`.*`   `->*`         |Pointer-to-member                                        |Left-to-right|
-|5          |`a*b`   `a/b`   `a%b`|Multiplication, division, and remainder                  |             |
+|5          |`a * b`   `a / b`   `a % b`|Multiplication, division, and remainder                  |             |
 |6          |`a+b`   `a-b`        |Addition and subtraction                                 |             |
 |7          |`<<`   `>>`          |Bitwise left shift and right shift                       |             |
 |8          |`<=>`                |Three-way comparison operator (since C++20)              |             |

@@ -26,9 +26,9 @@
 |10         |`==`   `!=`          |For relational operators = and ≠ respectively            |             |
 |11         |`&`                  |Bitwise AND                                              |             |
 |12         |`^`                  |Bitwise XOR (exclusive or)                               |             |
-|13         |`|`                  |Bitwise OR (inclusive or)                                |             |
+|13         |`\|`                  |Bitwise OR (inclusive or)                                |             |
 |14         |`&&`                 |Logical AND                                              |             |
-|15         |`||`                 |Logical OR                                               |             |
+|15         |`\|\|`                 |Logical OR                                               |             |
 |16         |`a?b:c`              |Ternary conditional[note 2]                              |Right-to-left|
 |           |`throw`              |throw operator                                           |             |
 |           |`co_yield`           |yield-expression (C++20)                                 |             |

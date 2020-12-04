@@ -26,9 +26,9 @@
 |10         |`==`   `!=`          |For relational operators = and ≠ respectively            |             |
 |11         |`&`                  |Bitwise AND                                              |             |
 |12         |`^`                  |Bitwise XOR (exclusive or)                               |             |
-|13         |`\|`                  |Bitwise OR (inclusive or)                                |             |
+|13         |`\|`                 |Bitwise OR (inclusive or)                                |             |
 |14         |`&&`                 |Logical AND                                              |             |
-|15         |`\|\|`                 |Logical OR                                               |             |
+|15         |`\|\|`               |Logical OR                                               |             |
 |16         |`a?b:c`              |Ternary conditional[note 2]                              |Right-to-left|
 |           |`throw`              |throw operator                                           |             |
 |           |`co_yield`           |yield-expression (C++20)                                 |             |
@@ -36,7 +36,7 @@
 |           |`+=`   `-=`          |Compound assignment by sum and difference                |             |
 |           |`*=`   `/=`   `%=`   |Compound assignment by product, quotient, and remainder  |             |
 |           |`<<=`   `>>=`        |Compound assignment by bitwise left shift and right shift|             |
-|           |`&=`   `^=`   `|=`   |Compound assignment by bitwise AND, XOR, and OR          |             |
+|           |`&=`   `^=`   `\|=`  |Compound assignment by bitwise AND, XOR, and OR          |             |
 |17         |`,`                  |Comma                                                    |Left-to-right|
 
 1. ↑ The operand of sizeof can't be a C-style type cast: the expression sizeof (int) * p is unambiguously interpreted as (sizeof(int)) * p, but not sizeof((int)*p).

@@ -1,3 +1,5 @@
+To combat agentic IP theft, this repository has been migrated to [Codeberg](https://codeberg.org/naffnuff/CppGuidelines). I hope to see you there!
+
 # CppGuidelines
 
 My personal [guidelines](./CppGuidelines.md) distilled from 15+ years modernizing and maintaining large C++ codebases in game development and enterprise systems.
